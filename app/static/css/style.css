@@ -1,32 +1,125 @@
+:root {
+	--primary-2: #ff3399;
+	--primary-1: #33ffff;
+	--secondary-1: #33cccc;
+	--secondary-2: #cc3399;
+	--tertiary-1: #3366cc;
+	--tertiary-2: #6600cc;
+
+}
+
 @font-face {
-	font-family: moncao;
-	src: url("/static/font/Monaco.woff");
+	font-family: 'poppins';
+	font-weight: 100;
+	src: url('/static/font/poppins-latin-100-normal.woff') format('woff');
+	src: url('/static/font/poppins-latin-100-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 200;
+        src: url('/static/font/poppins-latin-200-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-200-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 300;
+        src: url('/static/font/poppins-latin-300-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-300-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 400;
+        src: url('/static/font/poppins-latin-400-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 500;
+        src: url('/static/font/poppins-latin-500-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 600;
+        src: url('/static/font/poppins-latin-600-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 700;
+        src: url('/static/font/poppins-latin-700-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 800;
+        src: url('/static/font/poppins-latin-800-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-800-normal.woff2') format('woff2');
+}
+@font-face {
+        font-family: 'poppins';
+        font-weight: 900;
+        src: url('/static/font/poppins-latin-900-normal.woff') format('woff');
+        src: url('/static/font/poppins-latin-900-normal.woff2') format('woff2');
 }
 
 body {
-	font-family: moncao;
+	font-family: poppins, sans-serif;
 	color: white;
-	background-color: #2d3436;
-}
-label {
-	font-family: moncao;
+	background-color: #000000;
+	background-image : url("/static/img/back.png");
+	background-position: center;
+	background-repeat: repeat;
+	background-size: cover;
 }
 
-input, select, input:hover, select:hover {
+label {
+	font-family: poppins, sans-serif;
+}
+
+.jumbotron {
+	padding: 1rem;
+	margin-bottom: 1rem;
+	text-align: center;
+	color: #ffffff;
+	position: relative;
+	border-bottom: solid 4px var(--secondary-2);
+	
+	text-transform: uppercase;
+	font-weight: 700;
+	font-size: 3rem;
+	letter-spacing: 3px;		
+	text-shadow:
+		-3px 0 0 var(--primary-2),
+		3px 0 0 var(--primary-1);
+	
+	&::before {
+		content: "";
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		border-bottom: solid 4px var(--secondary-1);
+	}	
+}
+
+input, select {
 	background-color: black;
-	color: #b5e853;
 	border: none;
 	outline: none;
 	font-size: medium;
-}
-input:hover, select:hover {
 	cursor: pointer;
+	color: var(--primary-1);
+}
+
+input:hover, select:hover { 
+	color: var(--primary-2);
 }
 
 button {
 	background-color: black;
-	color: #b5e853;
-	border: solid 1px #b5e853;
+	color: var(--primary-1);
+	border: solid 1px var(--primary-1);
 	border-radius: 5px;
 	outline: none;
 	font-size: large;
@@ -35,15 +128,27 @@ button {
 }
 
 button:hover {
-	background-color: #b5e853;
+	background-color: var(--primary-2);
 	color: black;
 	cursor: pointer;
+}
+
+.small_btn {
+  	margin-left: 10px;
+	font-size: small;
 }
 
 .row {
 	display: flex;
 	flex-direction: row;
 	width: 100%;
+	gap: 1em;
+}
+
+.column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	gap: 1em;
 }
 
@@ -69,8 +174,8 @@ button:hover {
 	}
 }
 
-.green_prefix {
-	color: #b5e853;
+.prefix {
+	color: var(--primary-1);
 }
 
 .size_up {
@@ -111,10 +216,10 @@ button:hover {
 }
 
 a:link, a:visited {
-	color: #b5e853;
+	color: var(--primary-2);
 }
 a:hover, a:active {
-	color: #7bbd01;
+	color: var(--primary-2);
 }
 
 .full_width {
@@ -141,7 +246,7 @@ td {
 .typing {
 	width: fit-content;
 	overflow: hidden;
-	border-right: .15em solid #b5e853; 
+	border-right: .15em solid #ff399; 
 	white-space: nowrap;
 	letter-spacing: .15em;
 	animation-delay:15s;
@@ -159,5 +264,5 @@ td {
 /* The typewriter cursor effect */
 @keyframes blink-caret {
 	from, to { border-color: transparent }
-	50% { border-color: #b5e853; }
+	50% { border-color: var(--primary-1); }
 }  
