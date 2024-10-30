@@ -1,4 +1,5 @@
 data/
+nginx/certs/*
 config.json
 
 # Byte-compiled / optimized / DLL files

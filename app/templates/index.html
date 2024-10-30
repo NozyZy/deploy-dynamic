@@ -29,7 +29,7 @@
 {% block main %}
 <div class="row center" style="text-align: center;">
 	<div>
-		<h1>Welcome {{ session["user_name"] }} !</h1>
+		<h1 class="jumbotron">Welcome {{ session["user_name"] }} !</h1>
 		<h3>One instance per player at a time.</h3>
 		<h3>An instance will last {{ max_instance_duration }} minutes.</h3>
 		<h3>Deploy unique instances for your challenges</h3>
@@ -46,10 +46,10 @@
 			{% endwith %}
 
 			<form method="POST" action="/run_instance">
-				<span class="green_prefix size_up"> $ </span><label for="instances">Challenge to run :</label>
+				<span class="prefix size_up"> $ </span><label for="instances">Challenge to run :</label>
 				<br>
 				<br>
-				<span class="green_prefix">&nbsp> </span>
+				<span class="prefix">&nbsp> </span>
 				<select name="challenge_name">
 					<option value=""> Select a challenge </option>
 					{% for challenge in challenges_option %}
@@ -64,45 +64,57 @@
 				{% endif %}
 				<br>
 				<div class="row">
-					<span class="green_prefix size_up"> $ </span>
-					<div class=" green_prefix typing width_90 pointer" onclick="document.getElementById('submit').click()">Run instance</div>
+					<span class="prefix size_up"> $ </span>
+					<div class=" prefix typing width_90 pointer" onclick="document.getElementById('submit').click()">Run instance</div>
 					<input class="bold" type="submit" id="submit" value="↵">
 				</div>
 			</form>
 		</div>
-
-		{% if session['admin'] %}
-			<a href="{{ url_for('admin')}}">Admin</a>
-		{% endif %}
-		<a href="{{ url_for('logout')}}">Logout</a>
+	        <div class="column">
+        	        {% if session['admin'] %}
+                	        <a href="{{ url_for('admin')}}"><button>Admin</button></a>
+	                {% endif %}
+        	                <a href="{{ url_for('logout')}}"><button>Logout</button></a>
+        	</div>
 	</div>
 
 
 	<div class="row center">
 		<div class="terminal">
-			<h3>Instances of your team {{ session['team_name'] }}:</h3>
+			<div class="container">			
+				<h3>Instances of your team {{ session['team_name'] }}:</h3>
+				<span>{{ instances_count }} instance{% if instances_count > 1 %}s{% endif %} running</span>
+			</div>
 			{% if challenges_info %}
 				{% for key, challenge in challenges_info.items() %}
 					<div>
-						<hr style="margin: 30px 0 30px 0;">
+						<hr style="margin: 10px 0 30px 0;">
 						{% for container in challenge %}
 							{% if loop.index == 1 %}
 								<p>
 									<b>{{ container['user_name'] }}</b> deployed the challenge <b>{{ container['name'] }}</b>
 									{% if container['user_name'] == session['user_name'] %}
-										(<a id="remove_me" href="/">remove</a>)
+										     <a id="remove_me" href="/"><button class="small_btn">Remove</button></a>
 									{% endif %}
 								</p>
 								<small>Remaining time: {{ container['time_remaining'] }}</small>
 							{% endif %}
                             {% set services = container['ports'].split(', ') %}
-                            {% if services |length == 1 %}
+                            	<div class="sep">
+					<hr>
+					<hr style="display: none;">
+				</div>
+			    {% if services |length == 1 %}
                                 {% set port, credential = services[0].split(' @ ') %}
                                 <p>
-                                    Host: <strong>{{ container['host'] }}</strong>{% if port %}, Port: <strong>{{ port }}</strong>{% endif %}{% if credential.split(':')[0] != 'None' %}, Username: <strong>{{ credential.split(':')[0] }}</strong>{% endif %}{% if credential.split(':')[1] != 'None' %}, Password: <strong>{{ credential.split(':')[1] }}</strong>{% endif %} <small>({{ container['id'] }})</small>
+                                    Host: <strong>{{ container['host'] }}</strong>{% if port %}, Port: <strong>{{ port }}</strong>{% endif %}{% if credential.split(':')[0] != 'None' %}, Username: <strong>{{ credential.split(':')[0] }}</strong>{% endif %}{% if credential.split(':')[1] != 'None' %}, Password: <strong>{{ credential.split(':')[1] }}</strong>{% endif %}
+					</br><small>(ID: {{ container['id'] }})</small>
                                 </p>
                             {% elif services |length >= 1 %}
-                                <p>Host: <strong>{{ container['host'] }}</strong> <small>({{ container['id'] }})</small></p>
+                                <p>
+					Host: <strong>{{ container['host'] }}</strong>
+					</br><small>(ID: {{ container['id'] }})</small>
+				</p>
                                 <ul>
                                 {% for service in services %}
                                     {% set port, credential = service.split(' @ ') %}
@@ -127,7 +139,7 @@
 				{% endfor %}
 			{% endif %}
 		</div>
-		<h3>{{ instances_count }} instance{% if instances_count > 1 %}s{% endif %} running</h3>
+<!--		<h3>{{ instances_count }} instance{% if instances_count > 1 %}s{% endif %} running</h3>-->
 	</div>
 </div>
 
