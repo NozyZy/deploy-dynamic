@@ -11,6 +11,7 @@ class Instances(db.Model):
     user_name (str) : CTFd User name.
     team_id (int) : CTFd Team ID.
     team_name (str) : CTFd Team name.
+    traefik_name (bool) : Traefik enabled for this challenge instance.
     docker_image (str) : Docker image deployed by the user.
     ports (str) : Port mapped for the docker instance.
     instance_name (str) : Random name for the instance.
@@ -26,6 +27,7 @@ class Instances(db.Model):
     team_name = db.Column(db.String(128), unique=False, nullable=False)
 
     challenge_name = db.Column(db.String(128), unique=False, nullable=False)
+    traefik_enabled = db.Column(db.Boolean, unique=False, nullable=False, default=False)
     network_name = db.Column(db.String(128), unique=False, nullable=False)
     hostname = db.Column(db.String(128), unique=False, nullable=False)
     ip_address = db.Column(db.String(32), unique=False, nullable=False)

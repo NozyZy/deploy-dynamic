@@ -109,6 +109,36 @@ def login() -> str | flask.Response:  # noqa: PLR0911
     return redirect(url_for("login"))
 
 
+@app.route("/from_ctfd", methods=["GET"])
+def from_ctfd() -> str | flask.Response:
+    template_name = "login.html"
+
+    access_key = request.args.get("access_key")
+    challenge = request.args.get("challenge")
+
+    if not all([challenge, access_key]):
+        return redirect(url_for("index"))
+
+    success, message, user = check_access_key(access_key)
+    if not success:
+        return render(template_name, error=True, message=message)
+
+    if ADMIN_ONLY and not user["is_admin"]:
+        return render(
+            template_name,
+            error=True,
+            message="You need to be an administrator to login.",
+        )
+
+    session["verified"] = True
+    session["user_id"] = user["user_id"]
+    session["user_name"] = user["username"]
+    session["team_id"] = user["team_id"]
+    session["team_name"] = user["team_name"]
+    session["admin"] = user["is_admin"]
+
+    return redirect(url_for("index", challenge=challenge))
+
 @app.route("/", methods=["GET"])
 @login_required
 def index() -> str:
@@ -117,6 +147,7 @@ def index() -> str:
     instances.
     """
     instances = Instances.query.filter_by(team_id=session["team_id"]).all()
+    selected_challenge = request.args.get("challenge")
 
     if instances:
         challenges_info = {}
@@ -147,6 +178,7 @@ def index() -> str:
                     "ports": instance.ports,
                     "user_name": instance.user_name,
                     "time_remaining": remaining,
+                    "traefik_enabled": instance.traefik_enabled,
                 }
             )
 
@@ -155,8 +187,9 @@ def index() -> str:
             challenges=CHALLENGES,
             captcha=recaptcha,
             challenges_info=challenges_info,
+            selected_challenge=selected_challenge,
         )
-    return render("index.html", challenges=CHALLENGES, captcha=recaptcha)
+    return render("index.html", challenges=CHALLENGES, captcha=recaptcha, selected_challenge=selected_challenge)
 
 
 @app.route("/container/all", methods=["GET"])

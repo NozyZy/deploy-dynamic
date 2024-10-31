@@ -81,13 +81,19 @@ def create_instances(
 ) -> int:
     """Create new instances."""
     # Generate deploy environment
+    chall_secret = secrets.token_hex(8)
+    host = random.choice(DOCKER_HOSTS)
     deploy_config = {
-        "network_name": secrets.token_hex(16),
-        "host": random.choice(DOCKER_HOSTS),
+        "network_name": "dynamic_challenges",
+        "host": host,
+        "hostname": chall_secret,
         "containers": [],
     }
+    traefik_labels = {
+        "traefik.enable": "true",
+        f"traefik.http.routers.{chall_secret}.rule": f"Host(`{chall_secret}.{host['domain']}`)",
+    }
     worker: docker.DockerClient = deploy_config["host"]["client"]
-    worker.networks.create(deploy_config["network_name"], driver="bridge")
     current_app.logger.debug(
         "Starting deployment '%s' for challenge '%s'.",
         deploy_config["network_name"],
@@ -96,7 +102,6 @@ def create_instances(
 
     # Generate containers environment
     for container in challenge_info["containers"]:
-        instance_name = secrets.token_hex(16)
         ports = {pinfo["port"]: find_unused_port(deploy_config["host"]) for pinfo in container["ports"]}
         env = {"EXPOSED_PORTS": ports, "EXPOSED_HOST": deploy_config["host"]["domain"]}
         env.update(container.get("environment", {}))
@@ -104,8 +109,8 @@ def create_instances(
             {
                 "docker_image": container["docker_image"],
                 "command": container.get("command", None),
-                "hostname": container.get("hostname", instance_name),
-                "instance_name": instance_name,
+                "hostname": chall_secret,
+                "instance_name": chall_secret,
                 "ports": ports,
                 "protocols": [
                     pinfo["protocol"] for pinfo in container["ports"]
@@ -116,6 +121,8 @@ def create_instances(
                 "passwords": [
                     pinfo.get("password", None) for pinfo in container["ports"]
                 ],
+                "labels": traefik_labels if (container.get("enable_traefik", False) and host.get("enable_traefik", False)) else {},
+                "traefik_enabled": (container.get("enable_traefik", False) and host.get("enable_traefik", False)),
                 "environment": env,
                 "mem_limit": container.get("mem_limit", "512m"),
                 "privileged": container.get("privileged", False),
@@ -141,6 +148,7 @@ def create_instances(
             challenge_name=challenge_info["name"],
             network_name=deploy_config["network_name"],
             hostname=container["hostname"],
+            traefik_enabled=container["traefik_enabled"],
             ports=", ".join(
                 f"{port}/{proto} @ {user}:{password}"
                 for port, proto, user, password in zip(
@@ -159,11 +167,12 @@ def create_instances(
             created_container = worker.containers.run(
                 image=container["docker_image"],
                 command=container["command"],
-                hostname=container["hostname"],
+                hostname=deploy_config["hostname"],
                 name=container["instance_name"],
                 ports=container["ports"],
                 environment=container["environment"],
                 network=deploy_config["network_name"],
+                labels=container["labels"],
                 auto_remove=True,
                 detach=True,
                 mem_limit=container["mem_limit"],
@@ -324,16 +333,6 @@ def remove_container_by_name(host_domain: str, name: str) -> None:
                 current_app.logger.debug("Removing container '%s'...", name)
                 try:
                     containers[0].remove(force=True)
-
-                    network_name = next(
-                        iter(
-                            containers[0].attrs["NetworkSettings"]["Networks"]
-                        )
-                    )
-                    networks = client.networks.list(
-                        filters={"name": network_name}
-                    )
-                    networks[0].remove()
                 except NotFound as err:
                     current_app.logger.warning(
                         "Unable to find the container to remove (name: '%s'): "
@@ -341,20 +340,6 @@ def remove_container_by_name(host_domain: str, name: str) -> None:
                         name,
                         err,
                     )
-                except KeyError as err:
-                    current_app.logger.warning(
-                        "Unable to find the network to remove (name: '%s'): "
-                        "%s",
-                        network_name,
-                        err,
-                    )
-                except APIError as err:
-                    current_app.logger.warning(
-                        "Unable to remove the network (name: '%s'): %s",
-                        network_name,
-                        err,
-                    )
-                return
 
 
 def remove_container_by_id(instance_id: int) -> None:
