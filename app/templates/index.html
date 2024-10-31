@@ -57,7 +57,11 @@
 				<select name="challenge_name">
 					<option value=""> Select a challenge </option>
 					{% for challenge in challenges_option %}
-						<option value="{{ challenge['name'] }}">{{ challenge['name'] }}</option>
+                        {% if challenge['name'] == selected_challenge %}
+                            <option value="{{ challenge['name'] }}" selected>{{ challenge['name'] }}</option>
+                        {% else %}
+                            <option value="{{ challenge['name'] }}">{{ challenge['name'] }}</option>
+                        {% endif %}
 					{% endfor %}
 				</select>
 				<br>
