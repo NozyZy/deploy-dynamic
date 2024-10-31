@@ -116,10 +116,7 @@ def from_ctfd() -> str | flask.Response:
     access_key = request.args.get("access_key")
     challenge = request.args.get("challenge")
 
-    if not challenge:
-        return redirect(url_for("index"))
-
-    if not access_key:
+    if not all([challenge, access_key]):
         return redirect(url_for("index"))
 
     success, message, user = check_access_key(access_key)
