@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
-{% macro quickLaunch(host, service) %}
+{% macro quickLaunch(host, service, hostname, enable_traefik) %}
     {% set p, credential = service.split(' @ ') %}
     {% set port, proto = p.split('/') %}
     {% set username, password = credential.split(':') %}
 
     {% if proto in ["http", "https"] %}
-        <a href="{{ proto }}://{{ host }}:{{ port }}" target="_blank" referrerpolicy="no-referrer">{{ proto }}://{{ host }}:{{ port }}</a>
+        {% if enable_traefik %}
+            <a href="https://{{ hostname }}.{{ host }}" target="_blank" referrerpolicy="no-referrer">https://{{ hostname }}.{{ host }}</a>
+        {% else %}
+            <a href="{{ proto }}://{{ host }}:{{ port }}" target="_blank" referrerpolicy="no-referrer">{{ proto }}://{{ host }}:{{ port }}</a>
+        {% endif %}
     {% elif proto == "ssh" %}
         <a href="javascript:copy2Clipboard('ssh -p {{ port }} {{ username }}@{{ host }}')">
             ssh -p {{ port }} {{ username }}@{{ host }}
@@ -117,7 +121,7 @@
                                 <ul>
                                     {% for service in services %}
                                         <li>
-                                        {{ quickLaunch(container['host'], service) }}
+                                        {{ quickLaunch(container['host'], service, container['hostname'], container['traefik_enabled']) }}
                                         </li>
                                     {% endfor %}
                                 </ul>

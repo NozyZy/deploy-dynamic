@@ -11,15 +11,18 @@
     "hosts": [
         {
             "domain": "127.0.0.1",
-            "api": "unix:///var/run/docker.sock"
+            "api": "unix:///var/run/docker.sock",
+            "enable_traefik": false
         },
         {
             "domain": "dyn-01.heroctf.fr",
-            "api": "tcp://192.168.172.7:2375"
+            "api": "tcp://192.168.172.7:2375",
+            "enable_traefik": false
         },
         {
             "domain": "dyn-02.heroctf.fr",
-            "api": "tcp://192.168.172.174:2375"
+            "api": "tcp://192.168.172.174:2375",
+            "enable_traefik": false
         }
     ],
     "challenges": [
@@ -35,7 +38,8 @@
                         }
                     ],
                     "mem_limit": "512m",
-                    "read_only": false
+                    "read_only": false,
+                    "enable_traefik": true
                 }
             ]
         },
@@ -52,7 +56,8 @@
                         }
                     ],
                     "mem_limit": "1024m",
-                    "read_only": true
+                    "read_only": true,
+                    "enable_traefik": false
                 },
                 {
                     "docker_image": "imf_dev:latest",
@@ -66,7 +71,8 @@
                     "mem_limit": "1024m",
                     "read_only": false,
                     "cpu_period" : 100000,
-                    "cpu_quota" : 100000
+                    "cpu_quota" : 100000,
+                    "enable_traefik": false
                 }
             ]
         }
