@@ -170,7 +170,7 @@ def index() -> str:
 
             challenges_info[instance.network_name].append(
                 {
-		            "id": instance.id,
+		    "id": instance.id,
                     "name": instance.challenge_name,
                     "host": instance.host_domain,
                     "hostname": instance.hostname,
