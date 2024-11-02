@@ -105,6 +105,10 @@ def create_instances(
         ports = {pinfo["port"]: find_unused_port(deploy_config["host"]) for pinfo in container["ports"]}
         env = {"EXPOSED_PORTS": ports, "EXPOSED_HOST": deploy_config["host"]["domain"]}
         env.update(container.get("environment", {}))
+        if not (container.get("enable_traefik", False) and host.get("enable_traefik", False)):
+            deploy_config["network_name"] = chall_secret
+        if not worker.networks.list(names=[deploy_config["network_name"]]):
+            worker.networks.create(deploy_config["network_name"], driver="bridge")
         deploy_config["containers"].append(
             {
                 "docker_image": container["docker_image"],
@@ -333,11 +337,34 @@ def remove_container_by_name(host_domain: str, name: str) -> None:
                 current_app.logger.debug("Removing container '%s'...", name)
                 try:
                     containers[0].remove(force=True)
+                    network_name = next(
+                        iter(
+                            containers[0].attrs["NetworkSettings"]["Networks"]
+                        )
+                    )
+                    if network_name != "dynamic_challenges":
+                        networks = client.networks.list(
+                            filters={"name": network_name}
+                        )
+                        networks[0].remove()
                 except NotFound as err:
                     current_app.logger.warning(
                         "Unable to find the container to remove (name: '%s'): "
                         "%s",
                         name,
+                        err,
+                    )
+                except KeyError as err:
+                    current_app.logger.warning(
+                        "Unable to find the network to remove (name: '%s'): "
+                        "%s",
+                        network_name,
+                        err,
+                    )
+                except APIError as err:
+                    current_app.logger.warning(
+                        "Unable to remove the network (name: '%s'): %s",
+                        network_name,
                         err,
                     )
 
