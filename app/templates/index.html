@@ -109,8 +109,8 @@
 							{% endif %}
                             {% set services = container['ports'].split(', ') %}
                             	<div class="sep">
-					<hr>
-					<hr style="display: none;">
+					<hr style=>
+					<hr style="opacity:0;">
 				</div>
 			    {% if services |length == 1 %}
                                 {% set port, credential = services[0].split(' @ ') %}
@@ -147,7 +147,6 @@
 				{% endfor %}
 			{% endif %}
 		</div>
-<!--		<h3>{{ instances_count }} instance{% if instances_count > 1 %}s{% endif %} running</h3>-->
 	</div>
 </div>
 
