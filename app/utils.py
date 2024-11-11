@@ -103,7 +103,12 @@ def create_instances(
     # Generate containers environment
     for container in challenge_info["containers"]:
         ports = {pinfo["port"]: find_unused_port(deploy_config["host"]) for pinfo in container["ports"]}
-        env = {"EXPOSED_PORTS": ports, "EXPOSED_HOST": deploy_config["host"]["domain"]}
+        env = {
+            "EXPOSED_PORTS": ports,
+            "EXPOSED_HOST": deploy_config["host"]["domain"],
+            
+            "CONTAINER_CREATOR": session["team_id"]
+        }
         env.update(container.get("environment", {}))
         if not (container.get("enable_traefik", False) and host.get("enable_traefik", False)):
             deploy_config["network_name"] = chall_secret
