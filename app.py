@@ -153,8 +153,9 @@ def index() -> str:
         challenges_info = {}
 
         for instance in instances:
-            if instance.network_name not in challenges_info:
-                challenges_info[instance.network_name] = []
+	    name_id = "_".join([instance.network_name, instance.ip_address, instance.hostname])
+            if instance.name_id not in challenges_info:
+                challenges_info[name_id] = []
 
             remaining = datetime.timedelta(minutes=MAX_INSTANCE_DURATION) - (
                 datetime.datetime.now(datetime.UTC)
@@ -168,7 +169,7 @@ def index() -> str:
             else:
                 remaining = "This instance will be deleted shortly..."
 
-            challenges_info[instance.network_name].append(
+            challenges_info[name_id].append(
                 {
 		    "id": instance.id,
                     "name": instance.challenge_name,
