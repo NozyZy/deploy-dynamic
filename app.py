@@ -153,8 +153,8 @@ def index() -> str:
         challenges_info = {}
 
         for instance in instances:
-	    name_id = "_".join([instance.network_name, instance.ip_address, instance.hostname])
-            if instance.name_id not in challenges_info:
+            name_id = "_".join([instance.network_name, instance.ip_address, instance.hostname])
+            if name_id not in challenges_info:
                 challenges_info[name_id] = []
 
             remaining = datetime.timedelta(minutes=MAX_INSTANCE_DURATION) - (
