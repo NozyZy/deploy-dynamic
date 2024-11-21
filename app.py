@@ -153,7 +153,7 @@ def index() -> str:
         challenges_info = {}
 
         for instance in instances:
-            name_id = "_".join([instance.network_name, instance.ip_address, instance.hostname])
+            name_id = "_".join([instance.network_name, instance.challenge_name])
             if name_id not in challenges_info:
                 challenges_info[name_id] = []
 
