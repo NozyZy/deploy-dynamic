@@ -119,7 +119,7 @@ def create_instances(
                 "docker_image": container["docker_image"],
                 "command": container.get("command", None),
                 "hostname": chall_secret,
-                "instance_name": f"{chall_secret}_{container["docker_image"]}",
+                "instance_name": f"{chall_secret}_{container['docker_image']}",
                 "ports": ports,
                 "protocols": [
                     pinfo["protocol"] for pinfo in container["ports"]
